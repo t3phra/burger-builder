@@ -7,6 +7,7 @@ import Spinner from '../../../components/UI/Spinner/Spinner'
 import Button from '../../../components/UI/Button/Button'
 import Input from '../../../components/UI/Input/Input'
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler'
+import { checkValidity } from '../../../shared/utility'
 import * as actions from '../../../store/actions/index'
 
 import classes from './ContactData.module.css'
@@ -113,7 +114,6 @@ class ContactData extends Component {
       userId: this.props.userId,
     }
     this.props.onOrderBurger(order, this.props.token)
-    this.props.history.push('/')
   }
 
   inputChangedHandler = (event, inputIdentifier) => {
@@ -124,7 +124,7 @@ class ContactData extends Component {
       ...updatedOrderForm[inputIdentifier],
     }
     updatedFormElement.value = event.target.value
-    updatedFormElement.valid = this.checkValidity(
+    updatedFormElement.valid = checkValidity(
       updatedFormElement.value,
       updatedFormElement.validation
     )
@@ -134,40 +134,7 @@ class ContactData extends Component {
     for (let inputIdentifier in updatedOrderForm) {
       formIsValid = updatedOrderForm[inputIdentifier].valid && formIsValid
     }
-    console.log(formIsValid)
     this.setState({ orderForm: updatedOrderForm, formIsValid: formIsValid })
-  }
-
-  checkValidity = (value, rules) => {
-    let isValid = true
-
-    if (!rules) {
-      return true
-    }
-
-    if (rules.required) {
-      isValid = value.trim() !== '' && isValid
-    }
-
-    if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid
-    }
-
-    if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid
-    }
-
-    if (rules.isEmail) {
-      const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
-      isValid = pattern.test(value) && isValid
-    }
-
-    if (rules.isNumeric) {
-      const pattern = /^\d+$/
-      isValid = pattern.test(value) && isValid
-    }
-
-    return isValid
   }
 
   render() {
